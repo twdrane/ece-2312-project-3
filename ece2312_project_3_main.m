@@ -1,6 +1,30 @@
 close all
 
-isolateSpeech()
+%isolateSpeech();
+splitSignal();
+
+function splitSignal
+
+[audioFile,Fs] = audioread('teamG5-filteredspeech.wav')
+
+F = [0 3999/Fs 4000/Fs 1];
+A = [1 1 0 0];
+[fil1, fil2] = firls(255,F,A);
+lowpassAudio = filter(fil1,fil2,audioFile);
+
+B = [0 0 1 1];
+[fil3, fil4] = firls(256,F,B);
+highpassAudio = filter(fil3,fil4,audioFile);
+
+subplot(2,1,1);
+makeSpectrogram(highpassAudio);
+subplot(2,1,2);
+makeSpectrogram(lowpassAudio);
+
+audiowrite('teamG5-highpass.wav',highpassAudio,Fs);
+audiowrite('teamG5-lowpass.wav',lowpassAudio,Fs);
+
+end
 
 function isolateSpeech
 
@@ -17,7 +41,7 @@ makeSpectrogram(filteredAudio);
 
 sound(filteredAudio,Fs)
 
-audiowrite('teamG5-filteredspeech.wav',filteredAudio,44100);
+audiowrite('teamG5-filteredspeech.wav',filteredAudio,Fs);
 
 end
 
@@ -29,7 +53,6 @@ window = hamming(512);
 N_overlap = 256;
 N_fft = 1024;
 [~,F,T,P] = spectrogram(audio_data,window,N_overlap,N_fft,44100,'yaxis');
-figure
 surf(T,F,10*log10(P),'edgecolor','none');
 axis tight;
 view(0,90);
