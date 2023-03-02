@@ -3,8 +3,8 @@ close all
 %isolateSpeech();
 %splitSignal();
 %downsampleSplit();
-%downsampleSplitX2();
-resythesize();
+downsampleSplitX2();
+%resythesize();
 
 function resythesize
 
@@ -97,17 +97,17 @@ downLowpassBottom = downsample(lowpassBottomAudio,2);
 Fs = Fs/2
 
 figure
-subplot(2,1,1);
+subplot(4,1,1);
 makeSpectrogram(downHighpassTop,Fs)
 ylim([0 Fs/2])
-subplot(2,1,2);
+subplot(4,1,2);
 makeSpectrogram(downHighpassBottom,Fs)
 ylim([0 Fs/2])
-figure
-subplot(2,1,1);
+%figure
+subplot(4,1,3);
 makeSpectrogram(downLowpassTop,Fs)
 ylim([0 Fs/2])
-subplot(2,1,2);
+subplot(4,1,4);
 makeSpectrogram(downLowpassBottom,Fs)
 ylim([0 Fs/2])
 
