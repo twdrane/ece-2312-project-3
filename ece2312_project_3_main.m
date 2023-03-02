@@ -47,6 +47,8 @@ makeSpectrogram(reconstructed,Fs)
 %figure
 %makeSpectrogram(upLowTop,Fs);
 
+audiowrite('teamG5-synthesized.wav',reconstructed,Fs);
+
 sound(reconstructed,Fs)
 
 end
