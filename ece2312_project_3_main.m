@@ -1,14 +1,90 @@
 close all
 
-isolateSpeech();
-splitSignal();
+%isolateSpeech();
+%splitSignal();
+%downsampleSplit();
+downsampleSplitX2();
+
+function downsampleSplitX2
+figure
+[audioHighpass,Fs] = audioread('teamG5-highpassdown1.wav');
+[audioLowpass,Fs] = audioread('teamG5-lowpassdown1.wav');
+
+F = [0 3999/Fs 4000/Fs 1];
+A = [1 1 0 0];
+[fil1, fil2] = firls(255,F,A);
+lowpassBottomAudio = filter(fil1,fil2,audioLowpass);
+
+B = [0 0 1 1];
+[fil3, fil4] = firls(256,F,B);
+lowpassTopAudio = filter(fil3,fil4,audioLowpass);
+
+F = [0 5999/Fs 6000/Fs 1];
+A = [1 1 0 0];
+[fil1, fil2] = firls(255,F,A);
+highpassBottomAudio = filter(fil1,fil2,audioHighpass);
+
+B = [0 0 1 1];
+[fil3, fil4] = firls(256,F,B);
+highpassTopAudio = filter(fil3,fil4,audioHighpass);
+
+subplot(2,1,1);
+makeSpectrogram(lowpassTopAudio,Fs)
+ylim([0 Fs/2])
+subplot(2,1,2);
+makeSpectrogram(lowpassBottomAudio,Fs)
+ylim([0 Fs/2])
+figure
+subplot(2,1,1);
+makeSpectrogram(highpassTopAudio,Fs)
+ylim([0 Fs/2])
+subplot(2,1,2);
+makeSpectrogram(highpassBottomAudio,Fs)
+ylim([0 Fs/2])
+
+% downHighpass = downsample(audioHighpass,2);
+% downLowpass = downsample(audioLowpass,2);
+% Fs = Fs/2
+% figure
+% subplot(2,1,1);
+% makeSpectrogram(downHighpass,Fs)
+% ylim([0 8000])
+% subplot(2,1,2);
+% makeSpectrogram(downLowpass,Fs)
+% ylim([0 8000])
+
+%audiowrite('teamG5-highpassdown2.wav',downHighpass,Fs);
+%audiowrite('teamG5-lowpassdown2.wav',downLowpass,Fs);
+
+end
+
+function downsampleSplit
+figure
+[audioHighpass,Fs] = audioread('teamG5-highpass.wav');
+[audioLowpass,Fs] = audioread('teamG5-lowpass.wav');
+
+downHighpass = downsample(audioHighpass,2);
+downLowpass = downsample(audioLowpass,2);
+Fs = Fs/2
+
+subplot(2,1,1);
+makeSpectrogram(downHighpass,Fs)
+ylim([0 8000])
+subplot(2,1,2);
+makeSpectrogram(downLowpass,Fs)
+ylim([0 8000])
+
+audiowrite('teamG5-highpassdown1.wav',downHighpass,Fs);
+audiowrite('teamG5-lowpassdown1.wav',downLowpass,Fs);
+
+end
 
 function splitSignal
 
 [audioFile,Fs] = audioread('teamG5-filteredspeech.wav');
 
 figure
-F = [0 3999/Fs 4000/Fs 1];
+F = [0 7999/Fs 8000/Fs 1];
 A = [1 1 0 0];
 [fil1, fil2] = firls(255,F,A);
 lowpassAudio = filter(fil1,fil2,audioFile);
@@ -17,8 +93,8 @@ B = [0 0 1 1];
 [fil3, fil4] = firls(256,F,B);
 highpassAudio = filter(fil3,fil4,audioFile);
 
-lowpassAudio = downsample(lowpassAudio,2);
-Fs = Fs/2;
+%lowpassAudio = downsample(lowpassAudio,2);
+%Fs = Fs/2;
 
 subplot(2,1,1);
 makeSpectrogram(highpassAudio,Fs);
@@ -39,7 +115,7 @@ makeSpectrogram(audioFile,Fs)
 figure
 
 
-F = [0 7999/Fs 8000/Fs 1];
+F = [0 15999/Fs 16000/Fs 1];
 A = [1 1 0 0];
 [fil1, fil2] = firls(255,F,A);
 filteredAudio = filter(fil1,fil2,audioFile);
@@ -47,7 +123,7 @@ filteredAudio = filter(fil1,fil2,audioFile);
 downAudio = downsample(filteredAudio,2);
 Fs = Fs/2;
 
-makeSpectrogram(downAudio,Fs);
+makeSpectrogram(downAudio,Fs);%fixxxx
 
 sound(downAudio,Fs)
 
